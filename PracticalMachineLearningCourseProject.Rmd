@@ -1,0 +1,160 @@
+---
+title: "Practical Machine Learning Course Project"
+author: "Alireza Emam Doost"
+date: "June 25, 2016"
+output: 
+  html_document: 
+    fig_caption: yes
+---
+
+
+###Introduction  
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement wherein enthusiasts take measurements about themselves regularly to improve their health, to find patterns in their behavior. In this particular exercise the participants were asked to perform barbell lifts correctly and incorrectly in 5 different ways. Data has been gathered from accelerometers on the belt, forearm, arm, and dumbell of 6 participants and analyzed to fit a model that can now use this data to predict how the activity was performed.
+
+The data for this project comes from this original source: <http://groupware.les.inf.puc-rio.br/har>.
+
+
+##Initializing libraries and preparing Datasets
+ 
+```{r, echo=TRUE}
+#Load the necessary libraries
+library(ggplot2)
+library(lattice)
+library(caret)
+library(corrplot)
+library(Rtsne)
+library(xgboost)
+library(stats)
+library(rpart)
+library(rpart.plot)
+library(rattle)
+library(randomForest)
+library(survival)
+library(splines)
+library(parallel)
+library(gbm)
+library(knitr)
+knitr::opts_chunk$set(cache=TRUE)
+
+#Getting and loading data
+# URL of the training and testing data
+Train_Dataset.url ="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+Test_Dataset.url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+# file names
+Train_Dataset.name = "./data/pml-training.csv"
+Test_Dataset.name = "./data/pml-testing.csv"
+# if directory does not exist, create it
+if (!file.exists("./data")) {
+  dir.create("./data")
+}
+# if files does not exist, download the files
+if (!file.exists(Train_Dataset.name)) {
+  download.file(Train_Dataset.url, destfile=Train_Dataset.name)
+}
+if (!file.exists(Test_Dataset.name)) {
+  download.file(Test_Dataset.url, destfile=Test_Dataset.name)
+}
+# load the CSV files as data.frame 
+TrainingDS <- read.csv("./data/pml-training.csv", sep = ",", na.strings = c("", "NA"))
+TestingDS <- read.csv("./data/pml-testing.csv", sep = ",", na.strings = c("", "NA"))
+```
+Let's have a look at the data and **classe** variable which we are going to predict:  
+```{r,results='markup', echo=TRUE}
+str(TrainingDS, list.len=10)
+table(TrainingDS$classe)
+prop.table(table(TrainingDS$user_name, TrainingDS$classe), 1)
+prop.table(table(TrainingDS$classe))
+```
+###Cleaning Data
+The first six columns contain an id, name and some timestamp data that may not be useful as predictors. Removing them from the training and testing datasets.There are near zero values in some columns and we are going to use the nearZeroVar method to identify those columns and exclude them from the model.
+```{r, echo=TRUE}
+dim(TrainingDS)
+# Removing first six columns
+TrainingDS <- TrainingDS[, 7:160]
+TestingDS  <- TestingDS[, 7:160]
+
+AllNA    <- sapply(TrainingDS, function(x) mean(is.na(x))) > 0.95  
+TrainingDS <- TrainingDS[, AllNA==FALSE]
+TestingDS  <- TestingDS[, AllNA==FALSE]
+dim(TrainingDS)
+```
+###Data Partitioning  
+Partioning Training data set into two data sets, 60% for training, 40% for probing:
+```{r, echo=TRUE}
+inTrain <- createDataPartition(TrainingDS$classe, p=0.6, list=FALSE)
+TrainingData <- TrainingDS[inTrain, ]
+TrainingProb <- TrainingDS[-inTrain, ]
+dim(TrainingData); dim(TrainingProb)
+```
+##Building Model
+Three methods will be applied to model the regressions (in the Train dataset) and the best one (with higher accuracy when applied to the Test dataset) will be used for the quiz predictions. The methods are: Random Forests, Decision Tree and Generalized Boosted Model, as described below.
+A Confusion Matrix is plotted at the end of each analysis to better visualize the accuracy of the models.
+
+###1)Prediction with Decision Trees  
+```{r, echo=TRUE}
+set.seed(12345)
+Model_1 <- rpart(classe ~ ., data=TrainingData, method="class")
+fancyRpartPlot(Model_1, cex=0.1)
+Predictions_1 <- predict(Model_1, TrainingProb, type = "class")
+CM_Model_1 <- confusionMatrix(Predictions_1, TrainingProb$classe)
+CM_Model_1
+plot(CM_Model_1$table, col = CM_Model_1$byClass, main = paste("Decision Tree Confusion Matrix: Accuracy =", round(CM_Model_1$overall['Accuracy'], 4)))
+```
+
+The resulting decision tree model has an accuracy of 73.7%. The confusion matrix shows the out of sample performance of the model.  
+
+###2)Prediction with Random Forests  
+```{r, echo=TRUE}
+set.seed(12345)
+Model_2 <- randomForest(classe ~ ., data=TrainingData)
+Predictions_2 <- predict(Model_2, TrainingProb, type = "class")
+CM_Model_2 <- confusionMatrix(Predictions_2, TrainingProb$classe)
+CM_Model_2
+plot(CM_Model_2$table, col = CM_Model_2$byClass, main = paste("Random Forest Confusion Matrix: Accuracy =", round(CM_Model_2$overall['Accuracy'], 4)))
+```
+
+The resulting Random Forests model has an accuracy of 99.7%. The confusion matrix shows the out of sample performance of the model.  
+
+###3)Prediction with Generalized Boosted Regression  
+```{r, echo=TRUE}
+set.seed(12345)
+Model_3  <- train(classe ~ ., data = TrainingData, method = "gbm",
+                    trControl = trainControl(method = "repeatedcv", number = 5, repeats = 1), verbose = FALSE)
+Predictions_3 <- predict(Model_3, newdata=TrainingProb)
+CM_Model_3 <- confusionMatrix(Predictions_3, TrainingProb$classe)
+CM_Model_3
+plot(CM_Model_3$table, col = CM_Model_3$byClass, 
+     main = paste("GBM - Accuracy =", round(CM_Model_3$overall['Accuracy'], 4)))
+```
+
+The resulting Random Forests model has an accuracy of 98.8%. The confusion matrix shows the out of sample performance of the model.  
+
+##Prediction  
+
+The Random Forest model gave an accuracy of 99.7% on my TrainingProb dataset, which is much more better than the other models. The expected out-of-sample error is 100-99.7 = 0.3%, therefore the Random Forest model was selected to make the final predictions.
+
+```{r, echo=TRUE}
+Predictions_2 <- predict(Model_2, TestingDS, type = "class")
+```
+
+Here are the results of the prediction using the Random Forest model  
+```{r, echo=FALSE}
+Predictions_2
+```
+
+Create the output format in files as required for submission  
+```{r, echo=TRUE}
+# Write the results to a text file for submission
+pml_write_files = function(x){
+    n = length(x)
+    for(i in 1:n){
+        filename = paste0("problem_id_",i,".txt")
+        write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+    }
+}
+pml_write_files(Predictions_2)
+```
+
+##Conclusion  
+In this assignment, the Random Forest model was used to predict the 20 test cases given as part of this exercise. The results were submitted for evaluation and declared completely. The accuracy obtained (accuracy = 99.7%, and out-of-sample error = 0.3%) is highly accure for this project besed on the used datasets.
+
