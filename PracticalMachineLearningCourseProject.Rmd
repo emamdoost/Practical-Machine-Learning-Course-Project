@@ -188,7 +188,7 @@ CM_Model_1
 ## Overall Statistics
 ##                                           
 ##                Accuracy : 0.7929           
-##                  95% CI : (0.7362, 0.7556)
+##                  95% CI : (0.7837, 0.8018)
 ##     No Information Rate : 0.2845          
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
@@ -242,7 +242,7 @@ CM_Model_2
 ## Overall Statistics
 ##                                          
 ##                Accuracy : 0.9968         
-##                  95% CI : (0.995, 0.9977)
+##                  95% CI : (0.9953, 0.9979)
 ##     No Information Rate : 0.2845         
 ##     P-Value [Acc > NIR] : < 2.2e-16      
 ##                                          
@@ -305,7 +305,7 @@ CM_Model_3
 ## Overall Statistics
 ##                                           
 ##                Accuracy : 0.9861          
-##                  95% CI : (0.9819, 0.9874)
+##                  95% CI : (0.9833, 0.9886)
 ##     No Information Rate : 0.2845          
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
