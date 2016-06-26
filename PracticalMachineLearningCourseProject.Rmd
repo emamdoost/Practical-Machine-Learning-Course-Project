@@ -59,7 +59,7 @@ TrainingDS <- read.csv("./data/pml-training.csv", sep = ",", na.strings = c("", 
 TestingDS <- read.csv("./data/pml-testing.csv", sep = ",", na.strings = c("", "NA"))
 ```
 Let's have a look at the data and **classe** variable which we are going to predict:  
-```{r,eval=TRUE, echo=TRUE}
+```{r,results='markup', echo=TRUE}
 str(TrainingDS, list.len=10)
 table(TrainingDS$classe)
 prop.table(table(TrainingDS$user_name, TrainingDS$classe), 1)
@@ -67,7 +67,7 @@ prop.table(table(TrainingDS$classe))
 ```
 ###Cleaning Data
 The first six columns contain an id, name and some timestamp data that may not be useful as predictors. Removing them from the training and testing datasets.There are near zero values in some columns and we are going to use the nearZeroVar method to identify those columns and exclude them from the model.
-```{r,eval=TRUE, echo=TRUE}
+```{r, echo=TRUE}
 dim(TrainingDS)
 # Removing first six columns
 TrainingDS <- TrainingDS[, 7:160]
@@ -91,7 +91,7 @@ Three methods will be applied to model the regressions (in the Train dataset) an
 A Confusion Matrix is plotted at the end of each analysis to better visualize the accuracy of the models.
 
 ###1)Prediction with Decision Trees  
-```{r, echo=TRUE}
+```{r,fig.keep='all',echo=TRUE}
 set.seed(12345)
 Model_1 <- rpart(classe ~ ., data=TrainingData, method="class")
 fancyRpartPlot(Model_1, cex=0.1)
