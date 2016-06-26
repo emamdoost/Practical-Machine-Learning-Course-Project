@@ -59,7 +59,7 @@ TrainingDS <- read.csv("./data/pml-training.csv", sep = ",", na.strings = c("", 
 TestingDS <- read.csv("./data/pml-testing.csv", sep = ",", na.strings = c("", "NA"))
 ```
 Let's have a look at the data and **classe** variable which we are going to predict:  
-```{r,results='markup', echo=TRUE}
+```{r,eval=TRUE, echo=TRUE}
 str(TrainingDS, list.len=10)
 table(TrainingDS$classe)
 prop.table(table(TrainingDS$user_name, TrainingDS$classe), 1)
@@ -67,7 +67,7 @@ prop.table(table(TrainingDS$classe))
 ```
 ###Cleaning Data
 The first six columns contain an id, name and some timestamp data that may not be useful as predictors. Removing them from the training and testing datasets.There are near zero values in some columns and we are going to use the nearZeroVar method to identify those columns and exclude them from the model.
-```{r, echo=TRUE}
+```{r,eval=TRUE, echo=TRUE}
 dim(TrainingDS)
 # Removing first six columns
 TrainingDS <- TrainingDS[, 7:160]
