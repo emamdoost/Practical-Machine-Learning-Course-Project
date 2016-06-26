@@ -4,7 +4,6 @@ author: "Alireza Emam Doost"
 date: "June 25, 2016"
 output: 
   html_document: 
-    fig_caption: yes
 ---
 
 
@@ -29,63 +28,11 @@ library(stats)
 library(rpart)
 library(rpart.plot)
 library(rattle)
-```
-
-```
-## Rattle: A free graphical interface for data mining with R.
-## Version 4.1.0 Copyright (c) 2006-2015 Togaware Pty Ltd.
-## Type 'rattle()' to shake, rattle, and roll your data.
-```
-
-```r
 library(randomForest)
-```
-
-```
-## randomForest 4.6-12
-```
-
-```
-## Type rfNews() to see new features/changes/bug fixes.
-```
-
-```
-## 
-## Attaching package: 'randomForest'
-```
-
-```
-## The following object is masked from 'package:ggplot2':
-## 
-##     margin
-```
-
-```r
 library(survival)
-```
-
-```
-## 
-## Attaching package: 'survival'
-```
-
-```
-## The following object is masked from 'package:caret':
-## 
-##     cluster
-```
-
-```r
 library(splines)
 library(parallel)
 library(gbm)
-```
-
-```
-## Loaded gbm 2.1.1
-```
-
-```r
 library(knitr)
 knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=TRUE)
 
@@ -220,7 +167,7 @@ Model_1 <- rpart(classe ~ ., data=TrainingData, method="class")
 fancyRpartPlot(Model_1, cex=0.1)
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+![plot of chunk unnamed-chunk-5](https://github.com/emamdoost/Practical-Machine-Learning-Course-Project/blob/master/PracticalMachineLearningCourseProject_files/figure-html/unnamed-chunk-5-1.png)
 
 ```r
 Predictions_1 <- predict(Model_1, TrainingProb, type = "class")
@@ -268,7 +215,7 @@ plot(CM_Model_1$table, col = CM_Model_1$byClass,
                   round(CM_Model_1$overall['Accuracy'], 4)))
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-2.png)
+![plot of chunk unnamed-chunk-5](https://github.com/emamdoost/Practical-Machine-Learning-Course-Project/blob/master/PracticalMachineLearningCourseProject_files/figure-html/unnamed-chunk-5-2.png)
 
 The resulting decision tree model has an accuracy of 73.7%. The confusion matrix shows the out of sample performance of the model.  
 
@@ -322,7 +269,7 @@ plot(CM_Model_2$table, col = CM_Model_2$byClass,
                   round(CM_Model_2$overall['Accuracy'], 4)))
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
+![plot of chunk unnamed-chunk-6](https://github.com/emamdoost/Practical-Machine-Learning-Course-Project/blob/master/PracticalMachineLearningCourseProject_files/figure-html/unnamed-chunk-6-1.png)
 
 The resulting Random Forests model has an accuracy of 99.7%. The confusion matrix shows the out of sample performance of the model.  
 
@@ -385,7 +332,7 @@ plot(CM_Model_3$table, col = CM_Model_3$byClass,
                   round(CM_Model_3$overall['Accuracy'], 4)))
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+![plot of chunk unnamed-chunk-7](https://github.com/emamdoost/Practical-Machine-Learning-Course-Project/blob/master/PracticalMachineLearningCourseProject_files/figure-html/unnamed-chunk-7-1.png)
 
 The resulting Random Forests model has an accuracy of 98.8%. The confusion matrix shows the out of sample performance of the model.  
 
