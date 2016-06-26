@@ -80,7 +80,7 @@ dim(TrainingDS)
 ```
 ###Data Partitioning  
 Partioning Training data set into two data sets, 60% for training, 40% for probing:
-```{r, echo=TRUE}
+```{r,include=TRUE, echo=TRUE}
 inTrain <- createDataPartition(TrainingDS$classe, p=0.6, list=FALSE)
 TrainingData <- TrainingDS[inTrain, ]
 TrainingProb <- TrainingDS[-inTrain, ]
@@ -91,40 +91,46 @@ Three methods will be applied to model the regressions (in the Train dataset) an
 A Confusion Matrix is plotted at the end of each analysis to better visualize the accuracy of the models.
 
 ###1)Prediction with Decision Trees  
-```{r,fig.keep='all',echo=TRUE}
+```{r,include=TRUE, fig.keep='all',echo=TRUE}
 set.seed(12345)
 Model_1 <- rpart(classe ~ ., data=TrainingData, method="class")
 fancyRpartPlot(Model_1, cex=0.1)
 Predictions_1 <- predict(Model_1, TrainingProb, type = "class")
 CM_Model_1 <- confusionMatrix(Predictions_1, TrainingProb$classe)
 CM_Model_1
-plot(CM_Model_1$table, col = CM_Model_1$byClass, main = paste("Decision Tree Confusion Matrix: Accuracy =", round(CM_Model_1$overall['Accuracy'], 4)))
+plot(CM_Model_1$table, col = CM_Model_1$byClass, 
+     main = paste("Decision Tree Confusion Matrix: Accuracy =", 
+                  round(CM_Model_1$overall['Accuracy'], 4)))
 ```
 
 The resulting decision tree model has an accuracy of 73.7%. The confusion matrix shows the out of sample performance of the model.  
 
 ###2)Prediction with Random Forests  
-```{r, echo=TRUE}
+```{r,include=TRUE,  echo=TRUE}
 set.seed(12345)
 Model_2 <- randomForest(classe ~ ., data=TrainingData)
 Predictions_2 <- predict(Model_2, TrainingProb, type = "class")
 CM_Model_2 <- confusionMatrix(Predictions_2, TrainingProb$classe)
 CM_Model_2
-plot(CM_Model_2$table, col = CM_Model_2$byClass, main = paste("Random Forest Confusion Matrix: Accuracy =", round(CM_Model_2$overall['Accuracy'], 4)))
+plot(CM_Model_2$table, col = CM_Model_2$byClass, 
+     main = paste("Random Forest Confusion Matrix: Accuracy =", 
+                  round(CM_Model_2$overall['Accuracy'], 4)))
 ```
 
 The resulting Random Forests model has an accuracy of 99.7%. The confusion matrix shows the out of sample performance of the model.  
 
 ###3)Prediction with Generalized Boosted Regression  
-```{r, echo=TRUE}
+```{r,include=TRUE,  echo=TRUE}
 set.seed(12345)
 Model_3  <- train(classe ~ ., data = TrainingData, method = "gbm",
-                    trControl = trainControl(method = "repeatedcv", number = 5, repeats = 1), verbose = FALSE)
+                    trControl = trainControl(method = "repeatedcv", 
+                                             number = 5, repeats = 1), verbose = FALSE)
 Predictions_3 <- predict(Model_3, newdata=TrainingProb)
 CM_Model_3 <- confusionMatrix(Predictions_3, TrainingProb$classe)
 CM_Model_3
 plot(CM_Model_3$table, col = CM_Model_3$byClass, 
-     main = paste("GBM - Accuracy =", round(CM_Model_3$overall['Accuracy'], 4)))
+     main = paste("GBM - Accuracy =", 
+                  round(CM_Model_3$overall['Accuracy'], 4)))
 ```
 
 The resulting Random Forests model has an accuracy of 98.8%. The confusion matrix shows the out of sample performance of the model.  
