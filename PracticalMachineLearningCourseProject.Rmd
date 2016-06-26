@@ -2,9 +2,7 @@
 title: "Practical Machine Learning Course Project"
 author: "Alireza Emam Doost"
 date: "June 25, 2016"
-output: 
-  html_document: 
-    fig_caption: yes
+output: html_document
 ---
 
 
