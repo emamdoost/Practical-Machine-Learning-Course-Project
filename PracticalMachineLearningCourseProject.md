@@ -188,7 +188,7 @@ CM_Model_1
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.746           
+##                Accuracy : 0.7929           
 ##                  95% CI : (0.7362, 0.7556)
 ##     No Information Rate : 0.2845          
 ##     P-Value [Acc > NIR] : < 2.2e-16       
@@ -217,7 +217,7 @@ plot(CM_Model_1$table, col = CM_Model_1$byClass,
 
 ![plot of chunk unnamed-chunk-5](https://github.com/emamdoost/Practical-Machine-Learning-Course-Project/blob/master/PracticalMachineLearningCourseProject_files/figure-html/unnamed-chunk-5-2.png)
 
-The resulting decision tree model has an accuracy of 73.7%. The confusion matrix shows the out of sample performance of the model.  
+The resulting decision tree model has an accuracy of 79.3%. The confusion matrix shows the out of sample performance of the model.  
 
 ###2)Prediction with Random Forests  
 
@@ -242,7 +242,7 @@ CM_Model_2
 ## 
 ## Overall Statistics
 ##                                          
-##                Accuracy : 0.9966         
+##                Accuracy : 0.9968         
 ##                  95% CI : (0.995, 0.9977)
 ##     No Information Rate : 0.2845         
 ##     P-Value [Acc > NIR] : < 2.2e-16      
@@ -305,7 +305,7 @@ CM_Model_3
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.9848          
+##                Accuracy : 0.9861          
 ##                  95% CI : (0.9819, 0.9874)
 ##     No Information Rate : 0.2845          
 ##     P-Value [Acc > NIR] : < 2.2e-16       
@@ -334,7 +334,7 @@ plot(CM_Model_3$table, col = CM_Model_3$byClass,
 
 ![plot of chunk unnamed-chunk-7](https://github.com/emamdoost/Practical-Machine-Learning-Course-Project/blob/master/PracticalMachineLearningCourseProject_files/figure-html/unnamed-chunk-7-1.png)
 
-The resulting Random Forests model has an accuracy of 98.8%. The confusion matrix shows the out of sample performance of the model.  
+The resulting Random Forests model has an accuracy of 98.6%. The confusion matrix shows the out of sample performance of the model.  
 
 ##Prediction  
 
