@@ -34,7 +34,7 @@ library(splines)
 library(parallel)
 library(gbm)
 library(knitr)
-knitr::opts_chunk$set(cache=TRUE)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=TRUE)
 
 #Getting and loading data
 # URL of the training and testing data
@@ -59,7 +59,7 @@ TrainingDS <- read.csv("./data/pml-training.csv", sep = ",", na.strings = c("", 
 TestingDS <- read.csv("./data/pml-testing.csv", sep = ",", na.strings = c("", "NA"))
 ```
 Let's have a look at the data and **classe** variable which we are going to predict:  
-```{r,results='markup', echo=TRUE}
+```{r}
 str(TrainingDS, list.len=10)
 table(TrainingDS$classe)
 prop.table(table(TrainingDS$user_name, TrainingDS$classe), 1)
@@ -67,7 +67,7 @@ prop.table(table(TrainingDS$classe))
 ```
 ###Cleaning Data
 The first six columns contain an id, name and some timestamp data that may not be useful as predictors. Removing them from the training and testing datasets.There are near zero values in some columns and we are going to use the nearZeroVar method to identify those columns and exclude them from the model.
-```{r, echo=TRUE}
+```{r}
 dim(TrainingDS)
 # Removing first six columns
 TrainingDS <- TrainingDS[, 7:160]
@@ -80,7 +80,7 @@ dim(TrainingDS)
 ```
 ###Data Partitioning  
 Partioning Training data set into two data sets, 60% for training, 40% for probing:
-```{r,include=TRUE, echo=TRUE}
+```{r}
 inTrain <- createDataPartition(TrainingDS$classe, p=0.6, list=FALSE)
 TrainingData <- TrainingDS[inTrain, ]
 TrainingProb <- TrainingDS[-inTrain, ]
@@ -91,7 +91,7 @@ Three methods will be applied to model the regressions (in the Train dataset) an
 A Confusion Matrix is plotted at the end of each analysis to better visualize the accuracy of the models.
 
 ###1)Prediction with Decision Trees  
-```{r,include=TRUE, fig.keep='all',echo=TRUE}
+```{r}
 set.seed(12345)
 Model_1 <- rpart(classe ~ ., data=TrainingData, method="class")
 fancyRpartPlot(Model_1, cex=0.1)
@@ -106,7 +106,7 @@ plot(CM_Model_1$table, col = CM_Model_1$byClass,
 The resulting decision tree model has an accuracy of 73.7%. The confusion matrix shows the out of sample performance of the model.  
 
 ###2)Prediction with Random Forests  
-```{r,include=TRUE,  echo=TRUE}
+```{r}
 set.seed(12345)
 Model_2 <- randomForest(classe ~ ., data=TrainingData)
 Predictions_2 <- predict(Model_2, TrainingProb, type = "class")
@@ -120,7 +120,7 @@ plot(CM_Model_2$table, col = CM_Model_2$byClass,
 The resulting Random Forests model has an accuracy of 99.7%. The confusion matrix shows the out of sample performance of the model.  
 
 ###3)Prediction with Generalized Boosted Regression  
-```{r,include=TRUE,  echo=TRUE}
+```{r}
 set.seed(12345)
 Model_3  <- train(classe ~ ., data = TrainingData, method = "gbm",
                     trControl = trainControl(method = "repeatedcv", 
@@ -139,7 +139,7 @@ The resulting Random Forests model has an accuracy of 98.8%. The confusion matri
 
 The Random Forest model gave an accuracy of 99.7% on my TrainingProb dataset, which is much more better than the other models. The expected out-of-sample error is 100-99.7 = 0.3%, therefore the Random Forest model was selected to make the final predictions.
 
-```{r, echo=TRUE}
+```{r}
 Predictions_2 <- predict(Model_2, TestingDS, type = "class")
 ```
 
@@ -149,7 +149,7 @@ Predictions_2
 ```
 
 Create the output format in files as required for submission  
-```{r, echo=TRUE}
+```{r}
 # Write the results to a text file for submission
 pml_write_files = function(x){
     n = length(x)
